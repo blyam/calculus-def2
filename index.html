@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Защита ДЗ 4–8 · Матанализ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: calm, exam-room precise; a tool for the examiner, open mid-use.
+   IDEA: a printed exam ticket (билет) with a tear-off stub and a red-pen score.
+   PICTURE: the ticket itself — four problems, solutions folded under each.
+   COLOUR and TYPE: white paper, ink, slate for structure, red only for grades. Source Serif 4 + Inter.
+   LAYOUT: one column ≤ 920px; sticky nav; ticket first, then all problems, then journal. */
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#10191e);--ink:light-dark(#121212,#e7edf0);--mute:light-dark(#4a5560,#9fb0ba);
+--panel:light-dark(#e3ecf0,#18262d);--line:light-dark(#c9d6dd,#2a3c45);--paper:light-dark(#ffffff,#132027);
+--slate:light-dark(#2e6f8e,#7fb6d1);--red:light-dark(#e3120b,#ff5a4f);--sol:light-dark(#f4f8fa,#15232a)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,sans-serif;overflow-x:clip}
+html{scroll-padding-top:72px;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.task{animation:none!important}}
+h1,h2,.serif{font-family:"Source Serif 4",Georgia,serif;font-weight:700;line-height:1.08;text-wrap:balance;margin:0}
+h1{font-size:clamp(32px,5vw,48px)}h2{font-size:clamp(24px,3.4vw,30px)}
+.wrap{max-width:920px;margin:0 auto;padding:0 max(4vw,16px)}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:4px;align-items:center;overflow-x:auto;min-height:52px}
+nav a{flex:none;color:var(--ink);text-decoration:none;padding:12px 12px;font-weight:500;font-size:15px;border-radius:6px}
+nav a:hover{background:var(--panel)}nav .brand{color:var(--red);font-family:"Source Serif 4",serif;font-weight:700;margin-right:auto;padding-left:0}
+header.band{padding:clamp(28px,5vw,56px) 0 12px}
+.lede{color:var(--mute);max-width:64ch;margin:12px 0 0}
+.rules{display:flex;flex-wrap:wrap;gap:8px 20px;margin:18px 0 0;padding:0;list-style:none;font-size:14px;color:var(--mute)}
+.rules b{color:var(--ink);font-weight:600}
+section{padding:24px 0 40px}
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin:0 0 16px}
+button,.btn{font:inherit;font-size:15px;font-weight:600;min-height:44px;padding:0 18px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--slate)}
+button:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--slate);outline-offset:2px}
+.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.primary:hover{opacity:.9}
+label.chk{display:flex;align-items:center;gap:8px;font-size:15px;min-height:44px;cursor:pointer}
+label.chk input{width:20px;height:20px;accent-color:var(--slate)}
+input[type=text]{font:inherit;font-size:16px;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);width:min(260px,100%)}
+/* ticket */
+.ticket{background:var(--paper);border:1px solid var(--line);border-radius:10px;box-shadow:0 1px 0 var(--line),0 12px 32px -18px rgba(0,0,0,.35)}
+.stub{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:flex-end;justify-content:space-between;padding:18px 22px 16px;position:relative}
+.stub::after{content:"";position:absolute;left:14px;right:14px;bottom:0;border-bottom:2px dashed var(--line)}
+.notch{position:relative}.notch::before,.notch::after{content:"";position:absolute;top:-11px;width:22px;height:22px;border-radius:50%;background:var(--bg);border:1px solid var(--line)}
+.notch::before{left:-12px;clip-path:inset(0 0 0 50%)}.notch::after{right:-12px;clip-path:inset(0 50% 0 0)}
+.tk-title{font-size:clamp(26px,4vw,34px)}.tk-meta{color:var(--mute);font-size:14px;margin-top:4px}
+.total{font-family:"Source Serif 4",serif;font-weight:700;color:var(--red);font-size:clamp(34px,6vw,46px);line-height:1;white-space:nowrap}
+.total small{font-size:.45em;color:var(--mute);font-weight:600}
+.tk-body{padding:6px 22px 8px}
+.tk-foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px 22px 20px;border-top:1px solid var(--line)}
+.tk-foot .msg{color:var(--slate);font-size:14px;font-weight:500}
+/* task */
+.task{padding:20px 0;border-bottom:1px solid var(--line);animation:rise .35s ease both}
+.task:last-child{border-bottom:0}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.task-head{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between}
+.tag{display:flex;align-items:baseline;gap:10px}
+.num{font-family:"Source Serif 4",serif;font-weight:700;font-size:26px;color:var(--slate);white-space:nowrap}
+.topic{font-size:13px;color:var(--mute)}
+.score{display:flex;gap:4px}
+.score button{min-width:52px;padding:0 10px;font-family:"Source Serif 4",serif;font-size:17px}
+.score button[aria-pressed=true]{background:var(--red);border-color:var(--red);color:#fff}
+.stmt{font-size:17px;margin:10px 0 12px;max-width:72ch}
+details{border-radius:8px;margin:6px 0}
+details>summary{cursor:pointer;list-style:none;min-height:44px;display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;padding:0 12px;border-radius:8px;background:var(--panel)}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"";width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform .15s;flex:none}
+details[open]>summary::before{transform:rotate(45deg)}
+details>.in{padding:12px 14px 6px;background:var(--sol);border-radius:0 0 8px 8px}
+details[open]>summary{border-radius:8px 8px 0 0}
+.in p{margin:0 0 10px}.in ul,.in ol{margin:0 0 10px;padding-left:22px}
+.qs ol{list-style:none;padding:0;margin:0}
+.qs li details>summary{background:transparent;border:1px solid var(--line);font-weight:500;padding:8px 12px;line-height:1.45}
+.qs li details>.in{background:transparent;border:1px solid var(--line);border-top:0}
+.crit dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;margin:0 0 10px}
+.crit dt{font-family:"Source Serif 4",serif;font-weight:700;color:var(--red);white-space:nowrap}.crit dd{margin:0}
+.warn{border-left:3px solid var(--red);padding-left:10px}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;max-width:100%;padding:2px 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 6px}
+.chips button[aria-pressed=true]{background:var(--slate);border-color:var(--slate);color:#fff}
+.journal{list-style:none;padding:0;margin:12px 0 0}
+.journal li{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)}
+.journal .who{font-weight:600}.journal .det{color:var(--mute);font-size:14px}
+.journal .pts{font-family:"Source Serif 4",serif;font-weight:700;color:var(--red);font-size:22px;white-space:nowrap}
+.empty{color:var(--mute)}
+footer{border-top:1px solid var(--line);padding:20px 0 40px;color:var(--mute);font-size:13px}
+@media(max-width:480px){nav .brand{display:none}}
+@media(max-width:600px){.stub,.tk-body,.tk-foot{padding-left:14px;padding-right:14px}.score button{min-width:46px}}
+</style>
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
+macros:{tg:'\\operatorname{tg}',ctg:'\\operatorname{ctg}',arctg:'\\operatorname{arctg}',N:'\\mathbb N',R:'\\mathbb R',Q:'\\mathbb Q'}},
+svg:{fontCache:'global'}};
+</script>
+</head>
+<body>
+<nav><div class="wrap">
+<a class="brand" href="#ticket">Защита · матан</a>
+<a href="#ticket">Билет</a><a href="#all">Все задачи</a><a href="#journal">Журнал</a>
+</div></nav>
+
+<div class="wrap">
+<header class="band">
+<h1>Вторая защита: листки 4–8</h1>
+<p class="lede">Тяните билет из четырёх задач. Под каждой задачей свёрнуты решение, дополнительные вопросы с ответами и критерии на 0 / 0,5 / 1.</p>
+<ul class="rules">
+<li><b>Очно</b>, одна попытка</li>
+<li><b>4 задачи</b> из 10 с пометкой «на защиту»</li>
+<li>Своими решениями <b>пользоваться можно</b></li>
+<li>Максимум <b>4 балла</b></li>
+</ul>
+</header>
+
+<section id="ticket">
+<div class="controls">
+<button class="primary" id="draw">Вытянуть билет</button>
+<label class="chk"><input type="checkbox" id="diff"> из разных листков</label>
+<input type="text" id="who" placeholder="Фамилия студента" aria-label="Фамилия студента" autocomplete="off">
+</div>
+<div class="ticket">
+<div class="stub">
+<div><div class="tk-title serif">Билет № <span id="tk-num">1</span></div><div class="tk-meta" id="tk-meta"></div></div>
+<div class="total" id="total" aria-live="polite">— <small>/ 4</small></div>
+</div>
+<div class="notch"></div>
+<div class="tk-body" id="tk-list"></div>
+<div class="tk-foot">
+<button id="toggle">Раскрыть решения</button>
+<button id="copy">Скопировать итог</button>
+<button id="save">В журнал</button>
+<span class="msg" id="msg" aria-live="polite"></span>
+</div>
+</div>
+</section>
+
+<section id="all">
+<h2>Все задачи на защиту</h2>
+<div class="chips" id="chips"></div>
+<div id="all-list"></div>
+</section>
+
+<section id="journal">
+<h2>Журнал защит</h2>
+<p class="lede">Хранится только в этом браузере.</p>
+<ul class="journal" id="jr"></ul>
+</section>
+</div>
+<footer><div class="wrap">Матанализ, ПМИ ФКН, 2026/27 · задачи 4.5, 4.6, 5.6, 5.7, 6.7, 6.8, 7.5, 7.6, 8.7, 8.8 · решения проверяйте сами перед защитой</div></footer>
+
+<script>
+{
+const R=String.raw;
+const TOPIC={4:'Число e. Подпоследовательности',5:'Частичные пределы. Постоянная Эйлера',6:'Чезаро и Штольц. Числовые ряды',7:'Экспонента. Суммы рядов',8:'Предел функции'};
+const P=[
+{id:'4.5',sheet:4,
+st:R`Докажите, что \(\left(\frac{n}{e}\right)^n \le n! \le e\left(\frac{n}{2}\right)^n\) при всех \(n\in\N\).`,
+sol:R`<p><b>Опорный факт (задача 4.1).</b> \(b_n=\left(1+\frac1n\right)^n\) не убывает и \(b_n\to e\). Поэтому для всех \(n\): \(2=b_1\le\left(1+\frac1n\right)^n\le e\).</p>
+<p><b>Нижняя оценка</b>, индукция. База: \(\frac1e\le 1\). Переход: если \(\left(\frac ne\right)^n\le n!\), то</p>
+\[\left(\frac{n+1}{e}\right)^{n+1}=\left(\frac{n}{e}\right)^n\cdot\frac{n+1}{e}\cdot\left(1+\frac1n\right)^n\le n!\,(n+1)\cdot\frac{(1+\frac1n)^n}{e}\le(n+1)!.\]
+<p><b>Верхняя оценка</b>, индукция. База: \(1\le\frac e2\). Переход: если \(n!\le e\left(\frac n2\right)^n\), то</p>
+\[e\left(\frac{n+1}{2}\right)^{n+1}=e\left(\frac n2\right)^n\cdot\frac{n+1}{2}\cdot\left(1+\frac1n\right)^n\ge n!\cdot\frac{n+1}{2}\cdot 2=(n+1)!.\]
+<p>В обоих переходах ключевое тождество: \(\frac{(n+1)^{n+1}}{n^n}=(n+1)\left(1+\frac1n\right)^n\).</p>`,
+qs:[
+[R`Почему \(\left(1+\frac1n\right)^n\le e\)?`,R`<p>\(b_n\) не убывает и сходится к \(e\), а неубывающая сходящаяся последовательность не превосходит своего предела (предел равен \(\sup b_n\)). Монотонность, например, по неравенству о средних для \(n\) чисел \(1+\frac1n\) и одной единицы: \(\left(\frac{n+2}{n+1}\right)^{n+1}\ge\left(1+\frac1n\right)^n\).</p>`],
+[R`Откуда \(\left(1+\frac1n\right)^n\ge 2\)?`,R`<p>Неравенство Бернулли: \((1+x)^n\ge 1+nx\) при \(x\ge-1\); при \(x=\frac1n\) получаем \(\ge 2\). Или: \(b_n\ge b_1=2\) по монотонности.</p>`],
+[R`Можно ли из этих оценок найти \(\lim\frac{\sqrt[n]{n!}}{n}\)?`,R`<p>Нет: получается только \(\frac1e\le\frac{\sqrt[n]{n!}}{n}\le\frac{\sqrt[n]{e}}{2}\), то есть всё между \(\frac1e\) и \(\frac12\). Если же доказать (так же, через \((1+\frac1n)^{n+1}\ge e\)) оценку \(n!\le e\,n\left(\frac ne\right)^n\), то по двум милиционерам предел равен \(\frac1e\).</p>`],
+[R`Насколько точны оценки? Что говорит формула Стирлинга?`,R`<p>\(n!\sim\sqrt{2\pi n}\left(\frac ne\right)^n\). Нижняя оценка теряет лишь множитель порядка \(\sqrt n\), верхняя очень грубая: \(\frac{e(n/2)^n}{(n/e)^n}=e\left(\frac e2\right)^n\) растёт экспоненциально.</p>`]],
+crit:R`<dl><dt>1</dt><dd>Обе индукции, явно использованы \((1+\frac1n)^n\le e\) и \((1+\frac1n)^n\ge 2\), студент объясняет, откуда они.</dd>
+<dt>0,5</dt><dd>Доказана одна оценка, или переходы есть, но не может обосновать опорные неравенства.</dd>
+<dt>0</dt><dd>Нет индукции/сравнения или выкладки не сходятся.</dd></dl>`},
+
+{id:'4.6',sheet:4,
+st:R`Докажите, что последовательность \(a_n=\frac{10}{1}\cdot\frac{11}{3}\cdot\ldots\cdot\frac{n+9}{2n-1}\) сходится, и найдите её предел.`,
+sol:R`<p>Все \(a_n\gt 0\) и \(\dfrac{a_{n+1}}{a_n}=\dfrac{n+10}{2n+1}\).</p>
+<p>\(\frac{n+10}{2n+1}\le 1\iff n\ge 9\). Значит, начиная с \(a_9\) последовательность не возрастает (при \(n=9\) отношение равно 1, дальше меньше 1) и ограничена снизу нулём. По теореме Вейерштрасса она сходится, \(a_n\to L\ge 0\). Конечное число первых членов на сходимость не влияет.</p>
+<p>Переходим к пределу в \(a_{n+1}=a_n\cdot\frac{n+10}{2n+1}\): \(L=L\cdot\frac12\), откуда \(\boxed{L=0}\).</p>
+<p><b>Другой путь.</b> При \(n\ge 19\): \(\frac{n+10}{2n+1}\le\frac34\), поэтому \(0\lt a_n\le a_{19}\left(\frac34\right)^{n-19}\to 0\).</p>`,
+qs:[
+[R`Почему нельзя сразу перейти к пределу в рекуррентном соотношении?`,R`<p>Переход возможен, только если уже известно, что предел существует и конечен. Контрпример: \(a_n=2^n\), \(a_{n+1}=2a_n\) «даёт» \(L=2L\Rightarrow L=0\), но последовательность расходится.</p>`],
+[R`Докажите общий факт: если \(a_n\gt 0\) и \(\frac{a_{n+1}}{a_n}\to q\lt 1\), то \(a_n\to 0\).`,R`<p>Возьмём \(r=\frac{1+q}{2}\in(q,1)\). С некоторого \(N\) отношение меньше \(r\), тогда \(0\lt a_n\le a_N r^{\,n-N}\to 0\).</p>`],
+[R`Что будет, если в знаменателях стоят \(1,2,\ldots,n\) вместо нечётных?`,R`<p>\(a_n=\prod_{k=1}^n\frac{k+9}{k}=\binom{n+9}{9}\to+\infty\): отношение \(\frac{n+10}{n+1}\gt 1\) и стремится к 1, так что признак отношения ничего не даёт, а последовательность растёт как \(n^9/9!\).</p>`]],
+crit:R`<dl><dt>1</dt><dd>Монотонность хвоста (с верного номера), ограниченность, существование предела, затем \(L=0\); либо оценка геометрической прогрессией.</dd>
+<dt>0,5</dt><dd>Ответ 0, но предельный переход без доказательства существования предела, или ошибка с номером, с которого есть монотонность, которую студент исправляет.</dd>
+<dt>0</dt><dd>Только ответ.</dd></dl>`},
+
+{id:'5.6',sheet:5,
+st:R`Могут ли следующие множества быть множествами частичных пределов какой-нибудь последовательности: а) \(\left\{\frac1n:n\in\N\right\}\); б) \([0,1)\); в) \([0,1]\cap\Q\)?`,
+sol:R`<p><b>Ответ: нет во всех трёх случаях.</b></p>
+<p><b>Лемма.</b> Если \(x_k\) — частичные пределы \(\{a_n\}\) и \(x_k\to x\in\R\), то \(x\) — тоже частичный предел (множество частичных пределов замкнуто).</p>
+<p><i>Доказательство.</i> \(x_k\) — частичный предел, поэтому в любой его окрестности бесконечно много членов последовательности. Строим \(n_1\lt n_2\lt\ldots\): выбираем \(n_k\gt n_{k-1}\) с \(|a_{n_k}-x_k|\lt\frac1k\). Тогда</p>
+\[|a_{n_k}-x|\le\frac1k+|x_k-x|\to 0,\]
+<p>то есть \(a_{n_k}\to x\).</p>
+<ul><li>а) \(\frac1k\to 0\), но \(0\notin\left\{\frac1n\right\}\).</li>
+<li>б) \(1-\frac1k\in[0,1)\), \(1-\frac1k\to 1\notin[0,1)\).</li>
+<li>в) Десятичные приближения \(\frac{\sqrt2}{2}\) рациональны, лежат в \([0,1]\) и сходятся к \(\frac{\sqrt2}{2}\notin\Q\).</li></ul>
+<p>Во всех случаях лемма даёт частичный предел вне множества — противоречие.</p>`,
+qs:[
+[R`Докажите: \(a\) — частичный предел \(\iff\) в любой \(\varepsilon\)-окрестности \(a\) бесконечно много членов.`,R`<p>(⇒) Хвост сходящейся подпоследовательности лежит в окрестности, а это бесконечно много номеров. (⇐) Выбираем \(n_1\lt n_2\lt\ldots\) с \(|a_{n_k}-a|\lt\frac1k\), это возможно, поскольку подходящих номеров бесконечно много.</p>`],
+[R`Приведите последовательность, у которой множество частичных пределов ровно \([0,1]\).`,R`<p>Выписываем блоки \(0,1;\ 0,\frac12,1;\ 0,\frac13,\frac23,1;\ldots\) Для \(x\in[0,1]\) в \(q\)-м блоке есть член на расстоянии \(\le\frac1q\) от \(x\), выбираем по одному из каждого блока. Вне \([0,1]\) частичных пределов нет, так как все члены в \([0,1]\).</p>`],
+[R`А \(\{0\}\cup\left\{\frac1n\right\}\) может быть? (это 5.2в)`,R`<p>Да: \(1;\ 1,\frac12;\ 1,\frac12,\frac13;\ldots\) Каждое \(\frac1k\) встречается бесконечно много раз, \(0\) — предел подпоследовательности \(\frac1q\) (последние члены блоков). Других нет, так как предел подпоследовательности лежит в замыкании множества значений.</p>`],
+[R`Может ли множество частичных пределов быть пустым?`,R`<p>Среди конечных чисел — да, например \(a_n=n\). Если разрешать \(\pm\infty\), то нет: ограниченная последовательность имеет частичный предел по Больцано–Вейерштрассу, а неограниченная сверху (снизу) имеет частичный предел \(+\infty\) (\(-\infty\)).</p>`]],
+crit:R`<dl><dt>1</dt><dd>Три ответа «нет» и доказательство леммы с построением подпоследовательности (возрастающие номера!).</dd>
+<dt>0,5</dt><dd>Ответы верны, но лемма лишь заявлена или в построении номера не возрастают; либо разобраны не все пункты.</dd>
+<dt>0</dt><dd>Хотя бы один ответ «да» без понимания.</dd></dl>`},
+
+{id:'5.7',sheet:5,
+st:R`Пусть \(a_n=\frac1{\sqrt1}+\ldots+\frac1{\sqrt n}-2\sqrt n\), \(b_n=\frac1{\sqrt1}+\ldots+\frac1{\sqrt n}-2\sqrt{n+1}\).<br>а) Докажите, что \(a_n\ge b_n\), \(a_n\) не возрастает, \(b_n\) не убывает.<br>б) Выведите, что \(a_k\ge b_m\) при любых \(k,m\in\N\) и обе последовательности ограничены.<br>в) Докажите, что \(\frac1{\sqrt1}+\ldots+\frac1{\sqrt n}=2\sqrt n-c+\alpha_n\), где \(c\gt 0\), \(\alpha_n\to 0\).`,
+sol:R`<p><b>а)</b> \(a_n-b_n=2(\sqrt{n+1}-\sqrt n)\gt 0\).</p>
+\[a_{n+1}-a_n=\frac1{\sqrt{n+1}}-2(\sqrt{n+1}-\sqrt n)=\frac1{\sqrt{n+1}}-\frac{2}{\sqrt{n+1}+\sqrt n}\le 0,\]
+<p>так как \(\sqrt{n+1}+\sqrt n\le 2\sqrt{n+1}\).</p>
+\[b_{n+1}-b_n=\frac1{\sqrt{n+1}}-2(\sqrt{n+2}-\sqrt{n+1})=\frac1{\sqrt{n+1}}-\frac{2}{\sqrt{n+2}+\sqrt{n+1}}\ge 0,\]
+<p>так как \(\sqrt{n+2}+\sqrt{n+1}\ge 2\sqrt{n+1}\).</p>
+<p><b>б)</b> Пусть \(N=\max(k,m)\). Тогда \(a_k\ge a_N\ge b_N\ge b_m\). Отсюда \(b_1\le b_n\le a_1\) и \(b_1\le a_n\le a_1\): все члены лежат в \([1-2\sqrt2,\,-1]\).</p>
+<p><b>в)</b> Обе последовательности монотонны и ограничены, значит сходятся. \(a_n-b_n=\frac{2}{\sqrt{n+1}+\sqrt n}\to 0\), поэтому предел общий: \(L\). Так как \(a_n\) не возрастает, \(L\le a_1=-1\lt 0\). Положим \(c=-L\ge 1\gt 0\) и \(\alpha_n=a_n-L\to 0\). Тогда</p>
+\[\sum_{k=1}^n\frac1{\sqrt k}=2\sqrt n+a_n=2\sqrt n-c+\alpha_n.\]`,
+qs:[
+[R`Откуда берётся идея сравнивать с \(2\sqrt n\)?`,R`<p>\(2(\sqrt{k+1}-\sqrt k)\le\frac1{\sqrt k}\le 2(\sqrt k-\sqrt{k-1})\): это дискретный аналог \(\int\frac{dx}{\sqrt x}=2\sqrt x\). Суммируя, получаем телескопические оценки. Та же схема, что в 5.3 с \(\ln n\).</p>`],
+[R`Какие оценки на \(c\) следуют из решения? Чему \(c\) равно?`,R`<p>\(b_1\le L\le a_1\Rightarrow 1\le c\le 2\sqrt2-1\approx1{,}83\). На самом деле \(c=-\zeta(1/2)\approx 1{,}4604\).</p>`],
+[R`Почему из а) и б) пределы совпадают? Достаточно ли одной монотонности?`,R`<p>Нет: монотонность и ограниченность дают существование двух пределов, а совпадение следует только из \(a_n-b_n\to0\). Без этого получили бы лишь \(\lim b_n\le\lim a_n\).</p>`],
+[R`Следствие: найдите \(\lim\frac{1}{\sqrt n}\sum_{k=1}^n\frac1{\sqrt k}\).`,R`<p>\(=\lim\left(2-\frac{c-\alpha_n}{\sqrt n}\right)=2\). Попутно ряд \(\sum\frac1{\sqrt k}\) расходится.</p>`]],
+crit:R`<dl><dt>1</dt><dd>Все три пункта; в в) показаны совпадение пределов и строгая положительность \(c\).</dd>
+<dt>0,5</dt><dd>а), б) верны, в в) пропущено \(a_n-b_n\to0\) или почему \(c\gt 0\).</dd>
+<dt>0</dt><dd>Монотонность не доказана.</dd></dl>`},
+
+{id:'6.7',sheet:6,
+st:R`Пусть \(\lim\limits_{n\to\infty}a_n=a\). Докажите, что \(\lim\limits_{n\to\infty}\frac{a_1+a_2+\ldots+a_n}{n}=a\). Верно ли обратное утверждение?`,
+sol:R`<p>Пусть \(\varepsilon\gt 0\). Найдём \(N\) с \(|a_k-a|\lt\frac\varepsilon2\) при \(k\gt N\). При \(n\gt N\):</p>
+\[\left|\frac{a_1+\ldots+a_n}{n}-a\right|\le\frac1n\sum_{k=1}^{N}|a_k-a|+\frac1n\sum_{k=N+1}^{n}|a_k-a|\le\frac{C_N}{n}+\frac{n-N}{n}\cdot\frac\varepsilon2,\]
+<p>где \(C_N=\sum_{k\le N}|a_k-a|\) от \(n\) не зависит. Выберем \(M\gt N\) с \(\frac{C_N}{M}\lt\frac\varepsilon2\); тогда при \(n\gt M\) разность меньше \(\varepsilon\).</p>
+<p><b>Через Штольца:</b> \(x_n=a_1+\ldots+a_n\), \(y_n=n\uparrow+\infty\), \(\frac{x_{n+1}-x_n}{y_{n+1}-y_n}=a_{n+1}\to a\).</p>
+<p><b>Обратное неверно:</b> \(a_n=(-1)^n\). Суммы равны \(-1,0,-1,0,\ldots\), средние \(\to0\), а \(a_n\) расходится.</p>`,
+qs:[
+[R`Верно ли утверждение для \(a=+\infty\)?`,R`<p>Да. Например, Штольц работает и для \(A=+\infty\). Напрямую: при \(k\gt N\) \(a_k\gt 2E\), тогда среднее \(\ge\frac{S_N}{n}+\frac{n-N}{n}2E\gt E\) при больших \(n\).</p>`],
+[R`При каком дополнительном условии обратное верно?`,R`<p>Если \(a_n\) монотонна. Пусть, скажем, \(a_n\uparrow\). Если она не ограничена, то \(a_n\to+\infty\) и средние \(\to+\infty\) — противоречие. Значит, \(a_n\to L\) конечному, по прямому утверждению средние \(\to L\), откуда \(L=a\).</p>`],
+[R`Может ли неограниченная последовательность иметь сходящиеся средние?`,R`<p>Да: \(a_n=k\) при \(n=k^3\), иначе \(0\). Сумма первых \(n\) членов порядка \(n^{2/3}\), средние \(\to0\).</p>`],
+[R`Верен ли аналог для средних геометрических (\(a_n\gt0\))?`,R`<p>Да. При \(a\gt0\) логарифмируем и применяем доказанное к \(\ln a_n\to\ln a\). При \(a=0\): \(0\lt\sqrt[n]{a_1\cdots a_n}\le\frac{a_1+\ldots+a_n}{n}\to0\).</p>`]],
+crit:R`<dl><dt>1</dt><dd>Корректная \(\varepsilon\)-оценка с разбиением суммы (или Штольц с проверкой условий) и контрпример к обратному.</dd>
+<dt>0,5</dt><dd>Доказательство без контрпримера, или «потеряна» фиксированная часть суммы \(C_N/n\).</dd>
+<dt>0</dt><dd>Нет доказательства.</dd></dl>`},
+
+{id:'6.8',sheet:6,
+st:R`При каких \(p\in\R\) сходится ряд \(\displaystyle\sum_{k=2}^{\infty}\frac{1}{k(\ln k)^p}\)?`,
+sol:R`<p><b>Ответ: при \(p\gt 1\).</b></p>
+<p><b>\(p\le0\).</b> При \(k\ge3\) \(\ln k\gt1\), поэтому \((\ln k)^p\le1\) и \(\frac{1}{k(\ln k)^p}\ge\frac1k\). Гармонический ряд расходится, значит, по признаку сравнения расходится и наш.</p>
+<p><b>\(p\gt0\).</b> Члены положительны и убывают (знаменатель \(k(\ln k)^p\) возрастает). Признак Коши (сгущения): для неотрицательных невозрастающих \(a_k\) ряды \(\sum a_k\) и \(\sum 2^m a_{2^m}\) сходятся одновременно. Здесь</p>
+\[2^m a_{2^m}=\frac{2^m}{2^m(m\ln2)^p}=\frac{1}{(\ln 2)^p}\cdot\frac1{m^p},\]
+<p>а \(\sum\frac1{m^p}\) сходится \(\iff p\gt1\) (задача 6.4а).</p>
+<p><b>Почему верен признак.</b> Из монотонности \(2^m a_{2^{m+1}}\le\sum_{k=2^m}^{2^{m+1}-1}a_k\le 2^m a_{2^m}\); суммируем по \(m\).</p>`,
+qs:[
+[R`Докажите признак сгущения подробно.`,R`<p>\(S_{2^{M+1}-1}=\sum_{m=0}^{M}\sum_{k=2^m}^{2^{m+1}-1}a_k\le\sum_{m=0}^M 2^m a_{2^m}\): из сходимости сгущённого ряда следует ограниченность частичных сумм исходного. Обратно: \(S_{2^{M+1}}\ge\sum_{m=0}^{M}2^m a_{2^{m+1}}=\frac12\sum_{m=1}^{M+1}2^m a_{2^m}\). Для рядов с неотрицательными членами сходимость равносильна ограниченности частичных сумм.</p>`],
+[R`Зачем в признаке монотонность?`,R`<p>Пусть \(a_k=0\) при \(k=2^m\) и \(a_k=\frac1k\) иначе. Сгущённый ряд нулевой, а исходный расходится (отличается от гармонического на сходящийся ряд \(\sum 2^{-m}\)).</p>`],
+[R`Исследуйте \(\sum\frac{1}{k\ln k(\ln\ln k)^q}\).`,R`<p>Сгущение: \(2^m a_{2^m}=\frac{1}{m\ln2\,(\ln m+\ln\ln 2)^q}\) — снова ряд типа 6.8. Сходится \(\iff q\gt1\).</p>`],
+[R`Почему при \(p\le0\) не применяли сгущение?`,R`<p>Можно, но тогда надо проверять, что члены (с некоторого номера) убывают. Сравнение с гармоническим рядом проще и не требует монотонности.</p>`]],
+crit:R`<dl><dt>1</dt><dd>Ответ \(p\gt1\), оба направления, отдельно случай \(p\le0\), понимает условия признака (монотонность, неотрицательность).</dd>
+<dt>0,5</dt><dd>Ответ верен, но не разобран \(p\le0\) или не проверена монотонность; не может пояснить признак.</dd>
+<dt>0</dt><dd>Неверный ответ.</dd></dl>`},
+
+{id:'7.5',sheet:7,
+st:R`Завершите доказательство задачи 7.1 для отрицательных \(x\), т.е. докажите, что \(\lim\limits_{n\to\infty}\left(1+\frac xn\right)^n=e^x\) при всех \(x\in\R\).`,
+sol:R`<p>При \(x=0\) очевидно, при \(x\gt0\) — задача 7.1. Пусть \(x=-y\), \(y\gt0\). При \(n\gt y\) все множители положительны и</p>
+\[\left(1-\frac yn\right)^n=\frac{\left(1-\frac{y^2}{n^2}\right)^n}{\left(1+\frac yn\right)^n}.\]
+<p><b>Числитель \(\to1\).</b> Неравенство Бернулли (\(t=-\frac{y^2}{n^2}\ge-1\)):</p>
+\[1\ge\left(1-\frac{y^2}{n^2}\right)^n\ge1-\frac{y^2}{n}\to1.\]
+<p><b>Знаменатель \(\to e^y\)</b> по 7.1.</p>
+<p>Значит, предел равен \(\frac1{e^y}=e^{-y}=e^x\).</p>
+<p class="warn">Ловите ошибку «основание \(\to1\), значит степень \(\to1\)»: \(\left(1+\frac1n\right)^n\to e\ne1\).</p>`,
+qs:[
+[R`Докажите неравенство Бернулли.`,R`<p>Индукция: \((1+t)^{n+1}\ge(1+nt)(1+t)=1+(n+1)t+nt^2\ge1+(n+1)t\). Умножать можно, так как \(1+t\ge0\).</p>`],
+[R`Зачем условие \(n\gt y\)?`,R`<p>Чтобы \(1-\frac yn\gt0\) (деление и положительность) и \(t=-\frac{y^2}{n^2}\ge-1\) для Бернулли. Конечное число первых членов на предел не влияет.</p>`],
+[R`Почему \(e^{-y}=\frac1{e^y}\) для иррационального \(y\)?`,R`<p>Степень с действительным показателем определяется предельным переходом по рациональным: \(e^y=\lim e^{r_k}\), \(r_k\to y\), \(r_k\in\Q\). Для рациональных \(e^{-r}=\frac1{e^r}\), и равенство переносится в пределе (с \(e^{r_k}\ge1\gt0\) при \(r_k\gt0\) знаменатель не стремится к нулю).</p>`],
+[R`Найдите \(\lim\left(1-\frac1{n^2}\right)^n\) и \(\lim\left(1+\frac{1}{n^2}\right)^{n}\).`,R`<p>Оба равны 1. Первый — по Бернулли, как выше. Второй: \(1\le(1+\frac1{n^2})^n\le\left((1+\frac1{n^2})^{n^2}\right)^{1/n}\le e^{1/n}\to1\).</p>`]],
+crit:R`<dl><dt>1</dt><dd>Сведение к \(x\gt0\) через произведение и строгое доказательство, что \((1-\frac{y^2}{n^2})^n\to1\).</dd>
+<dt>0,5</dt><dd>Идея верна, но предел числителя «очевиден» (нет Бернулли/оценки) и студент не может доказать его на вопрос.</dd>
+<dt>0</dt><dd>Нет сведения к положительному случаю или рассуждение «\(1^n=1\)».</dd></dl>`},
+
+{id:'7.6',sheet:7,
+st:R`Члены ряда \(\sum_{k=1}^\infty\frac{(-1)^{k+1}}{k}\) переставили так, что за каждыми двумя положительными членами следует один отрицательный:
+\[1+\frac13-\frac12+\frac15+\frac17-\frac14+\frac19+\frac1{11}-\frac16+\ldots\]
+Докажите, что полученный ряд сходится, и найдите его сумму.`,
+sol:R`<p>Пусть \(H_m=1+\frac12+\ldots+\frac1m=\ln m+\gamma+\alpha_m\), \(\alpha_m\to0\) (задача 5.3).</p>
+<p>В первых \(n\) тройках положительные члены \(1,\frac13,\ldots,\frac1{4n-1}\) (это \(2n\) нечётных), отрицательные \(\frac12,\ldots,\frac1{2n}\).</p>
+\[\sum_{k=1}^{2n}\frac1{2k-1}=H_{4n}-\tfrac12H_{2n},\qquad\sum_{k=1}^{n}\frac1{2k}=\tfrac12H_n.\]
+\[S_{3n}=H_{4n}-\tfrac12H_{2n}-\tfrac12H_n=\ln4n-\tfrac12\ln2n-\tfrac12\ln n+o(1)=2\ln2-\tfrac12\ln2+o(1).\]
+<p>Константы \(\gamma\) сокращаются: \(1-\frac12-\frac12=0\). Итак, \(S_{3n}\to\frac32\ln2\).</p>
+<p>Далее \(S_{3n+1}=S_{3n}+\frac1{4n+1}\), \(S_{3n+2}=S_{3n}+\frac1{4n+1}+\frac1{4n+3}\); добавки \(\to0\). Три подпоследовательности покрывают все номера и имеют общий предел, поэтому</p>
+\[\sum=\frac32\ln2.\]`,
+qs:[
+[R`Почему недостаточно найти \(\lim S_{3n}\)?`,R`<p>Подпоследовательность частичных сумм может сходиться при расходящемся ряде: у \(1-1+1-1+\ldots\) \(S_{2n}=0\). Нужно, чтобы \(S_{3n+1},S_{3n+2}\) имели тот же предел — здесь это так, потому что члены ряда \(\to0\).</p>`],
+[R`Чему равна сумма исходного ряда и почему перестановка её меняет?`,R`<p>\(\ln2\) (7.2в). Ряд сходится условно (\(\sum\frac1k\) расходится). По теореме Римана перестановкой условно сходящегося ряда можно получить любую сумму, даже \(\pm\infty\). У абсолютно сходящегося сумма не меняется.</p>`],
+[R`Общая формула: \(p\) положительных, затем \(q\) отрицательных?`,R`<p>Та же выкладка даёт \(\ln2+\frac12\ln\frac pq\). Проверка: \(p=2,q=1\) даёт \(\frac32\ln2\).</p>`],
+[R`Как переставить, чтобы получить \(\frac12\ln2\)?`,R`<p>Один положительный, два отрицательных: \(1-\frac12-\frac14+\frac13-\frac16-\frac18+\ldots\) (формула при \(p=1,q=2\)). Напрямую: группы \(\left(\frac1{2k-1}-\frac1{4k-2}\right)-\frac1{4k}=\frac12\left(\frac1{2k-1}-\frac1{2k}\right)\).</p>`]],
+crit:R`<dl><dt>1</dt><dd>\(S_{3n}\) через \(H_m\), использована \(\gamma\), ответ \(\frac32\ln2\) и разобраны \(S_{3n+1},S_{3n+2}\).</dd>
+<dt>0,5</dt><dd>Верный ответ только по \(S_{3n}\), или верный метод с арифметической ошибкой.</dd>
+<dt>0</dt><dd>Нет метода, только ответ.</dd></dl>`},
+
+{id:'8.7',sheet:8,
+st:R`По определению докажите, что \(\lim\limits_{x\to+\infty}\arctg x=\frac\pi2\).`,
+sol:R`<p>Нужно: \(\forall\varepsilon\gt0\ \exists M\ \forall x\gt M:\ \left|\arctg x-\frac\pi2\right|\lt\varepsilon\).</p>
+<p>Факты: \(\arctg:\R\to\left(-\frac\pi2,\frac\pi2\right)\) строго возрастает (обратная к строго возрастающему \(\tg\) на \(\left(-\frac\pi2,\frac\pi2\right)\)).</p>
+<p><b>\(\varepsilon\ge\frac\pi2\):</b> \(M=0\). При \(x\gt0\): \(0\lt\arctg x\lt\frac\pi2\), значит, \(\left|\arctg x-\frac\pi2\right|\lt\frac\pi2\le\varepsilon\).</p>
+<p><b>\(0\lt\varepsilon\lt\frac\pi2\):</b> \(M=\tg\left(\frac\pi2-\varepsilon\right)=\ctg\varepsilon\gt0\). При \(x\gt M\) по монотонности</p>
+\[\frac\pi2-\varepsilon=\arctg M\lt\arctg x\lt\frac\pi2\ \Rightarrow\ 0\lt\frac\pi2-\arctg x\lt\varepsilon.\]`,
+qs:[
+[R`Почему \(\arctg\) строго возрастает?`,R`<p>Пусть \(x\lt y\), но \(\arctg x\ge\arctg y\). Применяем возрастающий \(\tg\) на \(\left(-\frac\pi2,\frac\pi2\right)\): \(x\ge y\), противоречие.</p>`],
+[R`Зачем разбор случаев по \(\varepsilon\)?`,R`<p>При \(\varepsilon\ge\pi\) число \(\frac\pi2-\varepsilon\le-\frac\pi2\) — вне области, где \(\tg\) обратен к \(\arctg\), формула для \(M\) теряет смысл. Допустимо сказать «достаточно рассмотреть малые \(\varepsilon\)», объяснив, что \(M\) для малого \(\varepsilon\) годится и для большего.</p>`],
+[R`Сформулируйте определение по Гейне и выведите утверждение из него.`,R`<p>Для любой \(x_n\to+\infty\): \(\arctg x_n\to\frac\pi2\). По \(\varepsilon\) берём \(M\) как выше, с некоторого \(N\) имеем \(x_n\gt M\), значит \(\left|\arctg x_n-\frac\pi2\right|\lt\varepsilon\).</p>`],
+[R`Докажите, что \(\lim\limits_{x\to-\infty}\arctg x=-\frac\pi2\).`,R`<p>\(\arctg\) нечётна: \(\arctg x=-\arctg(-x)\), а \(-x\to+\infty\). Или напрямую: \(M=-\ctg\varepsilon\).</p>`]],
+crit:R`<dl><dt>1</dt><dd>Явное \(M(\varepsilon)\), опора на монотонность и ограниченность \(\arctg\), корректная работа с большими \(\varepsilon\) (или обоснованная оговорка).</dd>
+<dt>0,5</dt><dd>Верное \(M\), но без обоснования монотонности, или ошибка с большими \(\varepsilon\), исправленная после вопроса.</dd>
+<dt>0</dt><dd>Нет явного \(M\), «подставили бесконечность».</dd></dl>`},
+
+{id:'8.8',sheet:8,
+st:R`Вычислите предел \(\lim\limits_{x\to a}\dfrac{\sin x-\sin a}{x-a}\).`,
+sol:R`<p><b>Ответ: \(\cos a\).</b></p>
+\[\frac{\sin x-\sin a}{x-a}=\frac{2\sin\frac{x-a}{2}\cos\frac{x+a}{2}}{x-a}=\frac{\sin t}{t}\cdot\cos\frac{x+a}{2},\qquad t=\frac{x-a}{2}.\]
+<p>При \(x\to a\), \(x\ne a\): \(t\to0\) и \(t\ne0\), поэтому по теореме о пределе сложной функции и 1-му замечательному пределу \(\frac{\sin t}{t}\to1\).</p>
+<p>\(\cos\frac{x+a}{2}\to\cos a\): \(\left|\cos u-\cos v\right|=2\left|\sin\frac{u+v}{2}\sin\frac{u-v}{2}\right|\le|u-v|\), а \(\left|\frac{x+a}{2}-a\right|=\frac{|x-a|}{2}\to0\).</p>
+<p>Предел произведения равен \(1\cdot\cos a=\cos a\).</p>`,
+qs:[
+[R`Почему законна замена \(t=\frac{x-a}{2}\)? (связь с 8.3)`,R`<p>Теорема о пределе композиции требует, чтобы внутренняя функция не принимала предельное значение в проколотой окрестности (или внешняя была непрерывна). Здесь \(t\ne0\) при \(x\ne a\). Без этого условия утверждение 8.3 неверно.</p>`],
+[R`Откуда \(|\sin z|\le|z|\)?`,R`<p>При \(0\lt z\lt\frac\pi2\) хорда меньше дуги (или площадь треугольника меньше площади сектора); дальше по нечётности, а при \(|z|\ge1\) очевидно, так как \(|\sin z|\le1\).</p>`],
+[R`Какой смысл у этого предела?`,R`<p>Это производная синуса в точке \(a\): \((\sin x)'=\cos x\).</p>`],
+[R`Найдите \(\lim\limits_{x\to a}\frac{\cos x-\cos a}{x-a}\).`,R`<p>\(\cos x-\cos a=-2\sin\frac{x-a}{2}\sin\frac{x+a}{2}\), предел равен \(-\sin a\).</p>`]],
+crit:R`<dl><dt>1</dt><dd>Разность синусов, корректная ссылка на 1-й замечательный предел с заменой, обоснован предел \(\cos\frac{x+a}2\).</dd>
+<dt>0,5</dt><dd>Ответ \(\cos a\) верен, но на вопрос о законности замены или непрерывности косинуса ответа нет.</dd>
+<dt>0</dt><dd>Только ответ или «по Лопиталю/производной» без вывода (производные ещё не пройдены — попросить вывести).</dd></dl>`}
+];
+
+const $=s=>document.querySelector(s);
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const tp=el=>{const M=window.MathJax;if(M&&M.startup&&M.startup.promise&&M.typesetPromise){M.startup.promise.then(()=>{if(M.typesetClear)M.typesetClear([el]);return M.typesetPromise([el])}).catch(()=>{})}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const fmt=x=>String(x).replace('.',',');
+
+const card=(p,inTicket)=>`<article class="task" data-id="${p.id}">
+<div class="task-head"><div class="tag"><span class="num">${p.id}</span><span class="topic">${TOPIC[p.sheet]}</span></div>
+${inTicket?`<div class="score" role="group" aria-label="Оценка за ${p.id}">${[0,0.5,1].map(s=>`<button data-s="${s}" aria-pressed="false">${fmt(s)}</button>`).join('')}</div>`:''}</div>
+<div class="stmt">${p.st}</div>
+<details class="sol"><summary>Решение</summary><div class="in">${p.sol}</div></details>
+<details class="qs"><summary>Дополнительные вопросы · ${p.qs.length}</summary><div class="in"><ol>${p.qs.map(q=>`<li><details><summary>${q[0]}</summary><div class="in">${q[1]}</div></details></li>`).join('')}</ol></div></details>
+<details class="crit"><summary>Критерии оценки</summary><div class="in">${p.crit}</div></details>
+</article>`;
+
+let ticket=[],scores={},draws=store.get('draws',0),open=false;
+
+function draw(){
+  let pick;
+  if($('#diff').checked){
+    const sheets=shuffle([4,5,6,7,8]).slice(0,4);
+    pick=sheets.map(s=>shuffle(P.filter(p=>p.sheet===s))[0]);
+  }else pick=shuffle(P).slice(0,4);
+  ticket=pick.sort((a,b)=>parseFloat(a.id)-parseFloat(b.id));
+  scores={};draws++;store.set('draws',draws);open=false;
+  renderTicket();
+}
+function renderTicket(){
+  $('#tk-num').textContent=draws;
+  $('#tk-meta').textContent='Задачи '+ticket.map(p=>p.id).join(', ');
+  const L=$('#tk-list');L.innerHTML=ticket.map(p=>card(p,true)).join('');
+  $('#toggle').textContent='Раскрыть решения';$('#msg').textContent='';
+  tp(L);updTotal();
+}
+function updTotal(){
+  const v=ticket.map(p=>scores[p.id]);
+  const done=v.filter(x=>x!=null).length;
+  const sum=v.reduce((a,x)=>a+(x||0),0);
+  $('#total').innerHTML=(done?fmt(sum):'—')+' <small>/ 4</small>';
+}
+function summary(){
+  const who=$('#who').value.trim()||'Студент';
+  const sum=ticket.reduce((a,p)=>a+(scores[p.id]||0),0);
+  return who+' — '+ticket.map(p=>p.id+' ('+(scores[p.id]==null?'—':fmt(scores[p.id]))+')').join(', ')+' — итого '+fmt(sum)+' / 4';
+}
+
+$('#tk-list').addEventListener('click',e=>{
+  const b=e.target.closest('.score button');if(!b)return;
+  const id=b.closest('.task').dataset.id,s=parseFloat(b.dataset.s);
+  scores[id]=scores[id]===s?null:s;
+  b.parentNode.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(parseFloat(x.dataset.s)===scores[id])));
+  updTotal();
+});
+$('#draw').addEventListener('click',draw);
+$('#toggle').addEventListener('click',()=>{
+  open=!open;document.querySelectorAll('#tk-list details.sol').forEach(d=>d.open=open);
+  $('#toggle').textContent=open?'Свернуть решения':'Раскрыть решения';
+});
+$('#copy').addEventListener('click',()=>{
+  const t=summary();
+  try{navigator.clipboard.writeText(t).then(()=>{$('#msg').textContent='Скопировано'},()=>{$('#msg').textContent=t})}catch(e){$('#msg').textContent=t}
+});
+$('#save').addEventListener('click',()=>{
+  const j=store.get('journal',[]);
+  j.unshift({who:$('#who').value.trim()||'Студент',when:new Date().toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}),items:ticket.map(p=>[p.id,scores[p.id]==null?null:scores[p.id]]),sum:ticket.reduce((a,p)=>a+(scores[p.id]||0),0)});
+  store.set('journal',j);renderJournal();$('#msg').textContent='Сохранено в журнал';
+});
+$('#who').addEventListener('input',e=>store.set('who',e.target.value));
+$('#diff').addEventListener('change',e=>store.set('diff',e.target.checked));
+
+function renderJournal(){
+  const j=store.get('journal',[]);
+  $('#jr').innerHTML=j.length?j.map((r,i)=>`<li><div><div class="who">${esc(r.who)}</div><div class="det">${r.when} · ${r.items.map(([id,s])=>id+': '+(s==null?'—':fmt(s))).join(', ')}</div></div><div style="display:flex;gap:10px;align-items:center"><span class="pts">${fmt(r.sum)} / 4</span><button data-del="${i}" aria-label="Удалить запись">Удалить</button></div></li>`).join(''):'<li class="empty">Пока пусто. Поставьте оценки в билете и нажмите «В журнал».</li>';
+}
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+$('#jr').addEventListener('click',e=>{
+  const b=e.target.closest('[data-del]');if(!b)return;
+  const j=store.get('journal',[]);j.splice(+b.dataset.del,1);store.set('journal',j);renderJournal();
+});
+
+let sheet=0;
+function renderAll(){
+  $('#chips').innerHTML=[0,4,5,6,7,8].map(s=>`<button data-sh="${s}" aria-pressed="${s===sheet}">${s?'Листок '+s:'Все'}</button>`).join('');
+  const L=$('#all-list');L.innerHTML=P.filter(p=>!sheet||p.sheet===sheet).map(p=>card(p,false)).join('');tp(L);
+}
+$('#chips').addEventListener('click',e=>{const b=e.target.closest('[data-sh]');if(!b)return;sheet=+b.dataset.sh;renderAll()});
+
+$('#who').value=store.get('who','');
+$('#diff').checked=store.get('diff',false);
+draw();renderAll();renderJournal();
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+</body>
+</html>
